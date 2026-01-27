@@ -9,7 +9,7 @@ NeuroStream is an AI-powered learning assistant that transforms video content in
 - **AI-Powered Insights:**
   - **Smart Summary:** Concise bullet points covering the core video content.
   - **Key Highlights:** Important keywords and phrases for quick scanning.
-  - **Interactive Quiz:** AI-generated multiple-choice questions for self-assessment.
+  - **Enhanced Quiz:** 8 AI-generated multiple-choice questions with varying difficulty levels (Easy to Moderate).
   - **Smart Timeline:** Time-based breakdown of topics with jump-to-time functionality.
 - **History Tracking:** Save and access all previous analysis results in your dashboard.
 - **Secure Authentication:** JWT-based user login and signup.

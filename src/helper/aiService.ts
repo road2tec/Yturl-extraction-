@@ -74,12 +74,12 @@ Generate:
 - Maximum 12 items
 
 3. Quiz:
-- Exactly 5 multiple-choice questions
-- Each question must be strictly based on the transcript
-- Each question must have:
-  - question
-  - 4 options
-  - answer (must exactly match one of the options)
+- Exactly 8 multiple-choice questions.
+- Questions should vary in difficulty (easy to moderate).
+- Each question must include:
+  - question (Question text based on the video explanation)
+  - options (4 options)
+  - correctAnswer (must exactly match one of the options)
 
 4. Timeline Breakdown:
 - Divide the video into logical sections based on topic changes.
@@ -104,7 +104,7 @@ Return the output in this EXACT JSON structure:
     {
       "question": "Question text",
       "options": ["Option A", "Option B", "Option C", "Option D"],
-      "answer": "Option A"
+      "correctAnswer": "Option A"
     }
   ],
   "timeline": [
@@ -127,7 +127,18 @@ Return the output in this EXACT JSON structure:
 
       console.log(`Success with model: ${modelName}. Parsing JSON...`);
       const jsonStr = text.replace(/```json/g, "").replace(/```/g, "").trim();
-      const insights: AIInsights = JSON.parse(jsonStr);
+      const rawInsights = JSON.parse(jsonStr);
+
+      // Map 'correctAnswer' to 'answer' for internal compatibility
+      const insights: AIInsights = {
+        ...rawInsights,
+        quiz: (rawInsights.quiz || []).map((q: any) => ({
+          question: q.question,
+          options: q.options,
+          answer: q.correctAnswer || q.answer, // Handle both just in case
+        })),
+      };
+
       return insights;
 
     } catch (error: any) {
@@ -150,26 +161,35 @@ Return the output in this EXACT JSON structure:
       "Key points highlight the importance of " + (keywords[2] || "structured learning") + " during the session.",
       "The transcript mentions several core elements including " + (keywords.slice(3, 6).join(", ") || "various technical terms") + ".",
       "Conclusion emphasizes the practical applications of the discussed material.",
-      "Note: This summary was generated using Mock Mode because the Gemini API returned a 404 error."
+      "Note: This summary was generated using Mock Mode because the Gemini API returned an error."
     ],
     highlights: keywords.length > 0 ? keywords : ["Learning", "Video", "AI", "Education"],
-    quiz: [
-      {
-        question: `Based on the video, what is a primary focus of ${keywords[0] || "the topic"}?`,
-        options: ["Primary Implementation", "Theoretical Background", "Interactive Examples", "All of the above"],
-        answer: "All of the above"
-      },
-      {
-        question: `Which of these was mentioned as a key keyword?`,
-        options: [keywords[1] || "Concept A", "Unknown Term", "Irrelevant Data", "None"],
-        answer: keywords[1] || "Concept A"
-      },
-      {
-        question: "What is the main goal of this session?",
-        options: ["Knowledge Sharing", "Skill Development", "Assessment", "Everything mentioned"],
-        answer: "Everything mentioned"
-      }
-    ].slice(0, transcript.length > 500 ? 5 : 3) as any,
+    quiz: Array.from({ length: 8 }).map((_, i) => {
+      const kw = keywords[i % keywords.length] || "this topic";
+      const secondaryKw = keywords[(i + 1) % keywords.length] || "learning";
+
+      const questionTypes = [
+        `What is the primary role of ${kw} as discussed in the video?`,
+        `How does ${kw} directly affect ${secondaryKw} according to the transcript?`,
+        `Which specific aspect of ${kw} was emphasized during the session?`,
+        `What is the main takeaway regarding ${kw} and its application?`,
+        `Identify the core principle of ${secondaryKw} mentioned alongside ${kw}.`,
+        `Based on the video, why is ${kw} considered essential?`,
+        `What challenge related to ${kw} was addressed in the explanation?`,
+        `How should one approach ${kw} for better results?`
+      ];
+
+      return {
+        question: questionTypes[i] || `Question ${i + 1} about ${kw}`,
+        options: [
+          `Advanced ${kw} Strategy`,
+          `Traditional ${secondaryKw} Methods`,
+          `Innovative ${kw} Implementation`,
+          `All concepts related to ${kw}`
+        ],
+        answer: `All concepts related to ${kw}`
+      };
+    }),
     timeline: [
       {
         timeRange: "0-2 min",
