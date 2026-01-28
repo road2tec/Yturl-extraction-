@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Markdown from "react-markdown";
+import { useTextToSpeech } from "../../../hooks/useTextToSpeech";
 
 interface QuizCardProps {
   videoPath: string;
@@ -19,6 +20,8 @@ export default function QuizCard({
   quiz,
 }: QuizCardProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<any>({});
+
+  const { speak, isSpeaking, cancel } = useTextToSpeech();
 
   const handleChange = (questionIndex: number, option: string) => {
     setSelectedAnswers((prevAnswers: any) => ({
@@ -51,6 +54,12 @@ export default function QuizCard({
           >
             Watch Video
           </a>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => (isSpeaking ? cancel() : speak(quiz[0].question))}
+          >
+            {isSpeaking ? "Stop" : "Listen"}
+          </button>
           <button
             className="btn btn-outline btn-sm ml-auto"
             onClick={() => {
@@ -90,13 +99,11 @@ export default function QuizCard({
                         return (
                           <li key={idx}>
                             <label
-                              className={`flex items-center ${
-                                isCorrect && isSelected
-                                  ? "text-success font-semibold"
-                                  : ""
-                              } ${
-                                isSelected && !isCorrect ? "text-error" : ""
-                              }`}
+                              className={`flex items-center ${isCorrect && isSelected
+                                ? "text-success font-semibold"
+                                : ""
+                                } ${isSelected && !isCorrect ? "text-error" : ""
+                                }`}
                             >
                               <input
                                 type="checkbox"

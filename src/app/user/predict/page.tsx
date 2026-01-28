@@ -14,10 +14,12 @@ import axios from "axios";
 import { useState, useRef } from "react";
 import Markdown from "react-markdown";
 import toast from "react-hot-toast";
+import { useTextToSpeech } from "../../../hooks/useTextToSpeech";
 
 export default function PredictPage() {
   const [file, setFile] = useState<File | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<any>({});
+  const { speak, isSpeaking, cancel } = useTextToSpeech();
 
   const handleChange = (questionIndex: number, option: string) => {
     setSelectedAnswers((prevAnswers: any) => ({
@@ -242,7 +244,22 @@ export default function PredictPage() {
           </div>
           {/* Summary */}
           <div className="card bg-base-200 shadow p-4">
-            <h2 className="text-2xl font-semibold text-center">📌 Summary</h2>
+            <h2 className="text-2xl font-semibold text-center flex items-center justify-center gap-2">
+              📌 Summary
+              <button
+                className="btn btn-circle btn-sm btn-ghost"
+                onClick={() =>
+                  isSpeaking ? cancel() : speak(result.summary)
+                }
+                title="Listen to Summary"
+              >
+                {isSpeaking ? (
+                  <span className="loading loading-bars loading-xs"></span>
+                ) : (
+                  "🔊"
+                )}
+              </button>
+            </h2>
             <div className="mt-2 text-base-content/90 p-10 space-y-2">
               <Markdown>{result.summary}</Markdown>
             </div>
@@ -277,7 +294,19 @@ export default function PredictPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg">{item.topic}</h3>
-                      <p className="text-base-content/80">{item.description}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-base-content/80">{item.description}</p>
+                        <button
+                          className="btn btn-circle btn-xs btn-ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            isSpeaking ? cancel() : speak(item.description);
+                          }}
+                          title="Listen"
+                        >
+                          🔊
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -292,8 +321,17 @@ export default function PredictPage() {
               <ol className="list-inside mt-2 space-y-2 text-base-content/90 p-10">
                 {result.quiz.map((q: any, i: number) => (
                   <li key={i}>
-                    <p className="font-medium">
+                    <p className="font-medium flex items-center gap-2">
                       {i + 1}. {q.question}
+                      <button
+                        className="btn btn-circle btn-xs btn-ghost"
+                        onClick={() =>
+                          isSpeaking ? cancel() : speak(q.question)
+                        }
+                        title="Listen"
+                      >
+                        🔊
+                      </button>
                     </p>
                     {q.options && (
                       <ul className="ml-5 space-y-1">

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Markdown from "react-markdown";
+import { useTextToSpeech } from "../../../hooks/useTextToSpeech";
 
 interface HighlightCardProps {
   title: string;
@@ -14,6 +15,7 @@ export default function HighlightCard({
   highlights,
   videoPath,
 }: HighlightCardProps) {
+  const { speak, isSpeaking, cancel } = useTextToSpeech();
   return (
     <>
       <div className="card bg-base-300 shadow-md rounded-lg p-4 border border-primary hover:shadow-lg transition">
@@ -40,6 +42,12 @@ export default function HighlightCard({
             Watch Video
           </a>
           <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => (isSpeaking ? cancel() : speak(highlights[0]))}
+          >
+            {isSpeaking ? "Stop" : "Listen"}
+          </button>
+          <button
             className="btn btn-outline btn-sm ml-auto"
             onClick={() => {
               (
@@ -65,7 +73,18 @@ export default function HighlightCard({
           </figure>
           <div className="py-4 space-y-2">
             {highlights.map((highlight, index) => (
-              <Markdown key={index}>{`- ${highlight}\n`}</Markdown>
+              <div key={index} className="flex items-start gap-2">
+                <button
+                  className="btn btn-circle btn-xs btn-ghost mt-1 shrink-0"
+                  onClick={() => (isSpeaking ? cancel() : speak(highlight))}
+                  title="Listen"
+                >
+                  🔊
+                </button>
+                <div className="flex-1">
+                  <Markdown>{`- ${highlight}\n`}</Markdown>
+                </div>
+              </div>
             ))}
           </div>
           <div className="modal-action">

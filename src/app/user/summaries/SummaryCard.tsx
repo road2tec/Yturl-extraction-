@@ -2,6 +2,7 @@
 
 import React from "react";
 import Markdown from "react-markdown";
+import { useTextToSpeech } from "../../../hooks/useTextToSpeech";
 
 interface SummaryCardProps {
   title: string;
@@ -14,6 +15,8 @@ export default function SummaryCard({
   summary,
   videoPath,
 }: SummaryCardProps) {
+  const { speak, isSpeaking, cancel } = useTextToSpeech();
+
   return (
     <>
       <div className="card bg-base-300 shadow-md rounded-lg p-4 border border-primary hover:shadow-lg transition">
@@ -39,6 +42,12 @@ export default function SummaryCard({
           >
             Watch Video
           </a>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => (isSpeaking ? cancel() : speak(summary))}
+          >
+            {isSpeaking ? "Stop" : "Listen"}
+          </button>
           <button
             className="btn btn-outline btn-sm ml-auto"
             onClick={() => {
