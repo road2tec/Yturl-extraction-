@@ -47,16 +47,29 @@ Before you begin, ensure you have the following installed:
    ```bash
    pip install vosk yt-dlp
    ```
-   *Note: Download a Vosk model (e.g., `vosk-model-small-en-us-0.15`) from [alphacephei.com/vosk/models](https://alphacephei.com/vosk/models) and extract it into the `python/` directory.*
+   **Critical Step for Transcription:**
+   - Download a Vosk model (e.g., `vosk-model-small-en-us-0.15`) from [alphacephei.com/vosk/models](https://alphacephei.com/vosk/models).
+   - Extract the downloaded zip file.
+   - **Rename the extracted folder to `model`**.
+   - Move this `model` folder into the `python/` directory of the project.
+   - Your path should look like: `neuro-stream/python/model/`
 
-4. **Environment Variables:**
-   Create a `.env` file in the root directory based on `.env.example`:
+4. **Install FFmpeg:**
+   - Download FFmpeg from [ffmpeg.org](https://ffmpeg.org/download.html).
+   - Extract the files and add the `bin` folder to your system's PATH.
+   - Verify installation by running `ffmpeg -version` in your terminal.
+
+5. **Environment Configuration:**
+   Copy the example environment file:
    ```bash
    cp .env.example .env
    ```
-   Update the `GEMINI_API_KEY`, `MONGO_URI`, and `JWT_SECRET`.
+   Open `.env` and configure the following:
+   - `MONGO_URI`: Connection string for your MongoDB instance.
+   - `JWT_SECRET`: A secret key for signing specific security tokens.
+   - `GEMINI_API_KEY`: Your API key from Google AI Studio.
 
-5. **Run the Development Server:**
+6. **Run the Development Server:**
    ```bash
    npm run dev
    ```
